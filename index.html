@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Senhas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #2575fc;
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .checkbox-group {
+      margin-top: 15px;
+    }
+
+    .checkbox-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: normal;
+    }
+
+    .strength-bar {
+      height: 10px;
+      background: #ddd;
+      margin-top: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      background: green;
+      transition: width 0.3s;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background: #2575fc;
+      color: white;
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1a5adf;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Senhas</h1>
+
+    <label for="campo-senha">Senha gerada:</label>
+    <input type="text" id="campo-senha" readonly>
+
+    <label for="tamanho-senha">Número de caracteres:</label>
+    <input type="number" id="tamanho-senha" min="4" max="32" value="12">
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="maiusculas" checked> Letras maiúsculas</label>
+      <label><input type="checkbox" id="minusculas" checked> Letras minúsculas</label>
+      <label><input type="checkbox" id="numeros" checked> Números</label>
+      <label><input type="checkbox" id="simbolos"> Símbolos</label>
+    </div>
+
+    <label>Força da senha:</label>
+    <div class="strength-bar"><div class="strength-fill" id="barra-forca"></div></div>
+
+    <button id="gerar-senha">🔒 Gerar senha</button>
+  </div>
+
+  <script>
+    function calcularForca(senha) {
+      let forca = 0;
+      if (senha.length >= 8) forca++;
+      if (/[A-Z]/.test(senha)) forca++;
+      if (/[a-z]/.test(senha)) forca++;
+      if (/[0-9]/.test(senha)) forca++;
+      if (/[^A-Za-z0-9]/.test(senha)) forca++;
+      return (forca / 5) * 100;
+    }
+
+    document.getElementById("gerar-senha").addEventListener("click", function () {
+      const tamanho = parseInt(document.getElementById("tamanho-senha").value);
+      const usarMaiusculas = document.getElementById("maiusculas").checked;
+      const usarMinusculas = document.getElementById("minusculas").checked;
+      const usarNumeros = document.getElementById("numeros").checked;
+      const usarSimbolos = document.getElementById("simbolos").checked;
+
+      let chars = "";
+      if (usarMaiusculas) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      if (usarMinusculas) chars += "abcdefghijklmnopqrstuvwxyz";
+      if (usarNumeros) chars += "0123456789";
+      if (usarSimbolos) chars += "!@#$%^&*()_+=<>?";
+
+      if (chars.length === 0) {
+        alert("Selecione pelo menos uma opção!");
+        return;
+      }
+
+      let senha = "";
+      for (let i = 0; i < tamanho; i++) {
+        const index = Math.floor(Math.random() * chars.length);
+        senha += chars[index];
+      }
+
+      document.getElementById("campo-senha").value = senha;
+
+      const forca = calcularForca(senha);
+      const barra = document.getElementById("barra-forca");
+      barra.style.width = forca + "%";
+      barra.style.background = forca < 40 ? "red" : forca < 70 ? "orange" : "green";
+    });
+  </script>
+</body>
+</html>
